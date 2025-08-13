@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Вход - Логистика Хром-КЗ{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-5">
+            <!-- Header -->
+            <div class="text-center mb-5">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Хром-КЗ" height="80" class="mb-4">
+                <h1 class="display-6 fw-bold">Вход в систему</h1>
+                <p class="lead text-muted">Авторизация для сотрудников департамента логистики Хром-КЗ</p>
+            </div>
+
+            <!-- Login Form -->
+            <div class="card border-0 shadow">
+                <div class="card-body p-5">
+                    <form method="POST" novalidate>
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="mb-3">
+                            {{ form.username.label(class="form-label") }}
+                            {{ form.username(class="form-control form-control-lg" + (" is-invalid" if form.username.errors else "")) }}
+                            {% if form.username.errors %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.username.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-4">
+                            {{ form.password.label(class="form-label") }}
+                            {{ form.password(class="form-control form-control-lg" + (" is-invalid" if form.password.errors else "")) }}
+                            {% if form.password.errors %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.password.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-sign-in-alt me-2"></i>Войти
+                            </button>
+                        </div>
+                    </form>
+
+                    <hr class="my-4">
+
+                    <div class="text-center">
+                        <p class="mb-0">Нет аккаунта? 
+                            <a href="{{ url_for('register') }}" class="text-decoration-none">Зарегистрироваться</a>
+                        </p>
+                    </div>
+
+                    <!-- Demo credentials info -->
+                    <div class="mt-4 p-3 bg-light rounded">
+                        <small class="text-muted">
+                            <strong>Демо доступ:</strong><br>
+                            Администратор: admin / admin123
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

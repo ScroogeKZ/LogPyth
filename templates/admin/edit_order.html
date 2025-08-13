@@ -1,0 +1,283 @@
+{% extends "base.html" %}
+
+{% block title %}Редактирование заказа {{ order.tracking_number }} - Логистика Хром-КЗ{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 fw-bold">Редактирование заказа</h1>
+                    <p class="text-muted mb-0">Заказ {{ order.tracking_number }}</p>
+                </div>
+                <div>
+                    <a href="{{ url_for('admin_orders') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Назад к заказам
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form method="POST" novalidate>
+        {{ form.hidden_tag() }}
+        
+        <div class="row g-4">
+            <!-- Left Column - Order Management (Logist Only) -->
+            {% if current_user.role == 'logist' %}
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-primary text-white p-3">
+                        <h5 class="mb-0">
+                            <i class="fas fa-cogs me-2"></i>Управление заказом
+                        </h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="mb-3">
+                            {{ form.status.label(class="form-label fw-bold") }}
+                            {{ form.status(class="form-select" + (" is-invalid" if form.status.errors else "")) }}
+                            {% if form.status.errors %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.status.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.price.label(class="form-label fw-bold") }}
+                            <div class="input-group">
+                                {{ form.price(class="form-control" + (" is-invalid" if form.price.errors else ""), placeholder="0") }}
+                                <span class="input-group-text">₸</span>
+                            </div>
+                            {% if form.price.errors %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.price.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.driver_id.label(class="form-label fw-bold") }}
+                            {{ form.driver_id(class="form-select" + (" is-invalid" if form.driver_id.errors else "")) }}
+                            {% if form.driver_id.errors %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.driver_id.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.internal_comments.label(class="form-label fw-bold") }}
+                            {{ form.internal_comments(class="form-control" + (" is-invalid" if form.internal_comments.errors else ""), rows="4", placeholder="Внутренние заметки и комментарии...") }}
+                            {% if form.internal_comments.errors %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.internal_comments.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Order Info Display -->
+                        <div class="border-top pt-3 mt-4">
+                            <h6 class="fw-bold mb-3">Информация о заказе</h6>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <small class="text-muted">Создан:</small><br>
+                                    <span class="fw-bold">{{ order.created_at.strftime('%d.%m.%Y %H:%M') }}</span>
+                                </div>
+                                <div class="col-6">
+                                    <small class="text-muted">Обновлен:</small><br>
+                                    <span class="fw-bold">{{ order.updated_at.strftime('%d.%m.%Y %H:%M') }}</span>
+                                </div>
+                                <div class="col-12 mt-2">
+                                    <small class="text-muted">Тип доставки:</small><br>
+                                    <span class="badge bg-{{ 'primary' if order.shipping_type == 'astana' else 'success' }}">
+                                        {{ order.get_shipping_type_display() }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Right Column - Contact Information -->
+            <div class="col-lg-{{ '8' if current_user.role == 'logist' else '12' }}">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-light p-3">
+                        <h5 class="mb-0">
+                            <i class="fas fa-edit me-2"></i>Редактируемые данные
+                        </h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <!-- Customer Contact Info -->
+                        <div class="mb-4">
+                            <h6 class="fw-bold mb-3">
+                                <i class="fas fa-user text-primary me-2"></i>Контактная информация клиента
+                            </h6>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Имя клиента</label>
+                                    <input type="text" class="form-control" value="{{ order.customer_name }}" readonly>
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form.customer_phone.label(class="form-label fw-bold") }}
+                                    {{ form.customer_phone(class="form-control" + (" is-invalid" if form.customer_phone.errors else "")) }}
+                                    {% if form.customer_phone.errors %}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.customer_phone.errors %}{{ error }}{% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-12">
+                                    {{ form.customer_email.label(class="form-label fw-bold") }}
+                                    {{ form.customer_email(class="form-control" + (" is-invalid" if form.customer_email.errors else "")) }}
+                                    {% if form.customer_email.errors %}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.customer_email.errors %}{{ error }}{% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pickup Information -->
+                        <div class="mb-4">
+                            <h6 class="fw-bold mb-3">
+                                <i class="fas fa-map-marker-alt text-success me-2"></i>Информация о погрузке
+                            </h6>
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    {{ form.pickup_address.label(class="form-label fw-bold") }}
+                                    {{ form.pickup_address(class="form-control" + (" is-invalid" if form.pickup_address.errors else ""), rows="3") }}
+                                    {% if form.pickup_address.errors %}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.pickup_address.errors %}{{ error }}{% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-12">
+                                    {{ form.pickup_contact.label(class="form-label fw-bold") }}
+                                    {{ form.pickup_contact(class="form-control" + (" is-invalid" if form.pickup_contact.errors else "")) }}
+                                    {% if form.pickup_contact.errors %}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.pickup_contact.errors %}{{ error }}{% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Delivery Information -->
+                        <div class="mb-4">
+                            <h6 class="fw-bold mb-3">
+                                <i class="fas fa-map-marker-alt text-danger me-2"></i>Информация о выгрузке
+                            </h6>
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    {{ form.delivery_address.label(class="form-label fw-bold") }}
+                                    {{ form.delivery_address(class="form-control" + (" is-invalid" if form.delivery_address.errors else ""), rows="3") }}
+                                    {% if form.delivery_address.errors %}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.delivery_address.errors %}{{ error }}{% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-12">
+                                    {{ form.delivery_contact.label(class="form-label fw-bold") }}
+                                    {{ form.delivery_contact(class="form-control" + (" is-invalid" if form.delivery_contact.errors else "")) }}
+                                    {% if form.delivery_contact.errors %}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.delivery_contact.errors %}{{ error }}{% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Cargo Information (Read Only) -->
+                        <div class="mb-4">
+                            <h6 class="fw-bold mb-3">
+                                <i class="fas fa-box text-warning me-2"></i>Информация о грузе
+                            </h6>
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label class="form-label fw-bold">Описание груза</label>
+                                    <textarea class="form-control" rows="3" readonly>{{ order.cargo_description }}</textarea>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Вес</label>
+                                    <input type="text" class="form-control" value="{{ order.cargo_weight or 'Не указан' }} кг" readonly>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Габариты</label>
+                                    <input type="text" class="form-control" value="{{ order.cargo_dimensions or 'Не указаны' }}" readonly>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Customer Notes (Read Only) -->
+                        {% if order.customer_notes %}
+                        <div class="mb-4">
+                            <h6 class="fw-bold mb-3">
+                                <i class="fas fa-comment text-info me-2"></i>Комментарии клиента
+                            </h6>
+                            <div class="alert alert-info">
+                                {{ order.customer_notes }}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- Action Buttons -->
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{{ url_for('admin_orders') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-2"></i>Отмена
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Сохранить изменения
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Auto-format phone number
+document.querySelector('input[name="customer_phone"]').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\D/g, '');
+    if (value.startsWith('8')) {
+        value = '7' + value.slice(1);
+    }
+    if (value.startsWith('7') && value.length <= 11) {
+        let formatted = '+7';
+        if (value.length > 1) formatted += ' (' + value.slice(1, 4);
+        if (value.length > 4) formatted += ') ' + value.slice(4, 7);
+        if (value.length > 7) formatted += '-' + value.slice(7, 9);
+        if (value.length > 9) formatted += '-' + value.slice(9, 11);
+        e.target.value = formatted;
+    }
+});
+
+// Status change confirmation for delivered orders
+document.querySelector('select[name="status"]').addEventListener('change', function(e) {
+    if (e.target.value === 'delivered') {
+        if (!confirm('Вы уверены, что хотите отметить заказ как доставленный?')) {
+            e.target.value = '{{ order.status }}';
+        }
+    }
+});
+
+// Price input formatting
+document.querySelector('input[name="price"]').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/[^\d.]/g, '');
+    e.target.value = value;
+});
+</script>
+{% endblock %}
