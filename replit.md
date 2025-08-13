@@ -9,6 +9,8 @@ This is an internal corporate product specifically designed for Chrome-KZ compan
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
+UI/UX Design: Modern design patterns with contemporary colors, enhanced animations, dark theme support, improved typography using Inter font family, glassmorphism effects, and enhanced user interactions.
+Admin Panel Layout: Left sidebar navigation menu (requested 2025-08-13) - menu should be integrated as a true sidebar on the left side, not below content, to match system identity.
 
 ## System Architecture
 

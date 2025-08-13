@@ -1,44 +1,17 @@
-{% extends "base.html" %}
+{% extends "admin/admin_base.html" %}
 
 {% block title %}Управление заказами - Логистика Хром-КЗ{% endblock %}
 
-{% block content %}
-<div class="container-fluid py-4">
-    <!-- Header -->
-    <div class="row mb-4">
-        <div class="col">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h1 class="h3 fw-bold">Управление заказами</h1>
-                    <p class="text-muted mb-0">Все заказы в системе</p>
-                </div>
-                <div>
-                    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary">
-                        <i class="fas fa-arrow-left me-2"></i>Назад к дашборду
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
+{% block admin_title %}Управление заказами{% endblock %}
+{% block admin_subtitle %}Все заказы в системе{% endblock %}
 
-    <!-- Navigation Tabs -->
-    <div class="row mb-4">
-        <div class="col">
-            <nav class="nav nav-pills">
-                <a class="nav-link" href="{{ url_for('admin_dashboard') }}">
-                    <i class="fas fa-tachometer-alt me-2"></i>Дашборд
-                </a>
-                <a class="nav-link active" href="{{ url_for('admin_orders') }}">
-                    <i class="fas fa-boxes me-2"></i>Заказы
-                </a>
-                {% if current_user.role == 'logist' %}
-                <a class="nav-link" href="{{ url_for('analytics') }}">
-                    <i class="fas fa-chart-bar me-2"></i>Аналитика
-                </a>
-                {% endif %}
-            </nav>
-        </div>
-    </div>
+{% block admin_actions %}
+<a href="{{ url_for('create_order', shipping_type='astana') }}" class="btn btn-primary">
+    <i class="fas fa-plus me-2"></i>Новый заказ
+</a>
+{% endblock %}
+
+{% block admin_content %}
 
     <!-- Filters -->
     <div class="row mb-4">

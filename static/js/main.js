@@ -1,4 +1,4 @@
-// Main JavaScript file for Хром-КЗ Logistics System
+// Enhanced JavaScript for Хром-КЗ Logistics System - Modern UI/UX
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
@@ -9,7 +9,194 @@ document.addEventListener('DOMContentLoaded', function() {
     initializePhoneFormatting();
     initializeTableSorting();
     initializeNotifications();
+    initializeModernAnimations();
+    initializeSearchFeatures();
+    initializeThemeToggle();
+    initializeProgressIndicators();
+    initializeKeyboardShortcuts();
 });
+
+// Modern animations and micro-interactions
+function initializeModernAnimations() {
+    // Intersection Observer for fade-in animations
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('fade-in-up');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+
+    // Observe elements for animation
+    document.querySelectorAll('.card, .feature-card, .service-card').forEach(el => {
+        observer.observe(el);
+    });
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+
+    // Button hover sound effects (subtle)
+    document.querySelectorAll('.btn').forEach(btn => {
+        btn.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px)';
+        });
+        
+        btn.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+}
+
+// Enhanced search functionality
+function initializeSearchFeatures() {
+    const searchInputs = document.querySelectorAll('input[type="search"], input[placeholder*="поиск"], input[placeholder*="Поиск"]');
+    
+    searchInputs.forEach(input => {
+        // Add search icon
+        if (!input.parentElement.querySelector('.search-icon')) {
+            const icon = document.createElement('i');
+            icon.className = 'fas fa-search search-icon';
+            icon.style.cssText = 'position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none;';
+            
+            input.parentElement.style.position = 'relative';
+            input.parentElement.appendChild(icon);
+            input.style.paddingRight = '40px';
+        }
+
+        // Debounced search
+        let searchTimeout;
+        input.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            const loader = this.parentElement.querySelector('.search-loader');
+            
+            if (this.value.length > 2) {
+                searchTimeout = setTimeout(() => {
+                    performSearch(this.value);
+                }, 300);
+            }
+        });
+    });
+}
+
+// Keyboard shortcuts for better UX
+function initializeKeyboardShortcuts() {
+    document.addEventListener('keydown', function(e) {
+        // Ctrl/Cmd + K for quick search
+        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+            e.preventDefault();
+            const searchInput = document.querySelector('input[type="search"], input[name="tracking_number"]');
+            if (searchInput) {
+                searchInput.focus();
+                searchInput.select();
+            }
+        }
+
+        // Escape to close modals or clear search
+        if (e.key === 'Escape') {
+            const openModal = document.querySelector('.modal.show');
+            if (openModal) {
+                bootstrap.Modal.getInstance(openModal).hide();
+            } else {
+                const searchInput = document.querySelector('input[type="search"]:focus');
+                if (searchInput) {
+                    searchInput.value = '';
+                    searchInput.blur();
+                }
+            }
+        }
+
+        // Enter on focused cards to click primary action
+        if (e.key === 'Enter' && e.target.classList.contains('card')) {
+            const primaryButton = e.target.querySelector('.btn-primary');
+            if (primaryButton) {
+                primaryButton.click();
+            }
+        }
+    });
+}
+
+// Progress indicators for forms
+function initializeProgressIndicators() {
+    const forms = document.querySelectorAll('form');
+    
+    forms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            const submitBtn = form.querySelector('button[type="submit"]');
+            if (submitBtn && !form.querySelector('.is-invalid')) {
+                // Add loading state
+                submitBtn.classList.add('loading');
+                submitBtn.disabled = true;
+                
+                // Store original text
+                const originalText = submitBtn.innerHTML;
+                submitBtn.dataset.originalText = originalText;
+                
+                // Update button text
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Обработка...';
+                
+                // Reset after 5 seconds if no redirect
+                setTimeout(() => {
+                    if (submitBtn.classList.contains('loading')) {
+                        submitBtn.classList.remove('loading');
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalText;
+                    }
+                }, 5000);
+            }
+        });
+    });
+}
+
+// Theme toggle functionality (light/dark mode)
+function initializeThemeToggle() {
+    const themeToggle = document.createElement('button');
+    themeToggle.className = 'btn btn-outline-secondary btn-sm me-2';
+    themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+    themeToggle.title = 'Переключить тему';
+    themeToggle.setAttribute('data-bs-toggle', 'tooltip');
+    
+    // Add to navbar
+    const navButtons = document.querySelector('.navbar-nav:last-child');
+    if (navButtons) {
+        const themeItem = document.createElement('li');
+        themeItem.className = 'nav-item';
+        themeItem.appendChild(themeToggle);
+        navButtons.insertBefore(themeItem, navButtons.firstChild);
+    }
+
+    // Theme toggle functionality
+    themeToggle.addEventListener('click', function() {
+        document.body.classList.toggle('dark-theme');
+        const isDark = document.body.classList.contains('dark-theme');
+        
+        this.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    });
+
+    // Load saved theme
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-theme');
+        themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+    }
+}
 
 // Initialize Bootstrap tooltips
 function initializeTooltips() {

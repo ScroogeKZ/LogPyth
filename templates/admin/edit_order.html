@@ -1,25 +1,17 @@
-{% extends "base.html" %}
+{% extends "admin/admin_base.html" %}
 
 {% block title %}Редактирование заказа {{ order.tracking_number }} - Логистика Хром-КЗ{% endblock %}
 
-{% block content %}
-<div class="container-fluid py-4">
-    <!-- Header -->
-    <div class="row mb-4">
-        <div class="col">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h1 class="h3 fw-bold">Редактирование заказа</h1>
-                    <p class="text-muted mb-0">Заказ {{ order.tracking_number }}</p>
-                </div>
-                <div>
-                    <a href="{{ url_for('admin_orders') }}" class="btn btn-outline-secondary">
-                        <i class="fas fa-arrow-left me-2"></i>Назад к заказам
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
+{% block admin_title %}Редактирование заказа{% endblock %}
+{% block admin_subtitle %}Заказ {{ order.tracking_number }}{% endblock %}
+
+{% block admin_actions %}
+<a href="{{ url_for('admin_orders') }}" class="btn btn-outline-secondary">
+    <i class="fas fa-arrow-left me-2"></i>Назад к заказам
+</a>
+{% endblock %}
+
+{% block admin_content %}
 
     <form method="POST" novalidate>
         {{ form.hidden_tag() }}
@@ -244,7 +236,6 @@
             </div>
         </div>
     </form>
-</div>
 {% endblock %}
 
 {% block scripts %}
